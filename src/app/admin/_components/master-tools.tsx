@@ -1,31 +1,48 @@
 "use client";
 
-import { useState, useRef, useEffect, type JSX } from "react";
+import { useState, useRef, useEffect } from "react";
 
 export function MasterTools() {
   const [abaAtiva, setAbaAtiva] = useState<"dados" | "ref">("dados");
+  // Novo estado para controlar quantos dados rolar
+  const [quantidade, setQuantidade] = useState(1);
+
   const [historico, setHistorico] = useState<
     Array<{
       dado: string;
-      valor: number;
+      valor: number; // Aqui será a SOMA total
+      detalhes: number[]; // Aqui ficam os resultados individuais
       critico: boolean;
       timestamp: string;
     }>
   >([]);
   const logEndRef = useRef<HTMLDivElement>(null);
 
-  // Auto-scroll no log quando rolar dado
+  // Auto-scroll
   useEffect(() => {
     logEndRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [historico]);
 
   const rolar = (lados: number) => {
-    const resultado = Math.floor(Math.random() * lados) + 1;
-    // Crítico no 20 (D20) ou Máximo nos outros dados
-    const isCritico =
-      (lados === 20 && resultado === 20) ||
-      (lados !== 20 && resultado === lados);
-    const isDesastre = lados === 20 && resultado === 1;
+    const resultadosIndividuais: number[] = [];
+    let somaTotal = 0;
+    let temCritico = false;
+    let temDesastre = false;
+
+    // Loop para rolar X dados
+    for (let i = 0; i < quantidade; i++) {
+      const resultado = Math.floor(Math.random() * lados) + 1;
+      resultadosIndividuais.push(resultado);
+      somaTotal += resultado;
+
+      // Verifica critico/desastre individualmente para efeitos visuais
+      if (
+        (lados === 20 && resultado === 20) ||
+        (lados !== 20 && resultado === lados)
+      )
+        temCritico = true;
+      if (lados === 20 && resultado === 1) temDesastre = true;
+    }
 
     const time = new Date().toLocaleTimeString("pt-BR", {
       hour12: false,
@@ -35,11 +52,12 @@ export function MasterTools() {
     });
 
     setHistorico((prev) => [
-      ...prev.slice(-19), // Mantém os últimos 20 (mas joga no final pro scroll funcionar estilo chat)
+      ...prev.slice(-19),
       {
-        dado: `D${lados}`,
-        valor: resultado,
-        critico: isCritico || isDesastre,
+        dado: `${quantidade}D${lados}`, // Ex: 3D6
+        valor: somaTotal,
+        detalhes: resultadosIndividuais,
+        critico: temCritico || temDesastre, // Marca como crítico se houver qualquer extremo
         timestamp: time,
       },
     ]);
@@ -47,7 +65,7 @@ export function MasterTools() {
 
   return (
     <div className="flex h-[600px] flex-col overflow-hidden rounded border border-red-900/50 bg-black shadow-[0_0_30px_rgba(220,38,38,0.1)]">
-      {/* CABEÇALHO / ABAS TIPO "FOLDER" */}
+      {/* CABEÇALHO / ABAS */}
       <div className="flex border-b border-red-900/30 bg-red-950/10">
         <button
           onClick={() => setAbaAtiva("dados")}
@@ -74,7 +92,31 @@ export function MasterTools() {
       {/* --- CONTEÚDO: DADOS --- */}
       {abaAtiva === "dados" && (
         <div className="flex flex-1 flex-col p-4">
-          {/* Grid de Botões (Estilo Keypad) */}
+          {/* SELETOR DE QUANTIDADE (NOVO) */}
+          <div className="mb-3 flex items-center justify-between rounded border border-red-900/30 bg-zinc-900/50 p-2">
+            <span className="text-[10px] font-bold tracking-widest text-red-500 uppercase">
+              Quantidade
+            </span>
+            <div className="flex items-center gap-3">
+              <button
+                onClick={() => setQuantidade(Math.max(1, quantidade - 1))}
+                className="flex h-8 w-8 items-center justify-center rounded border border-red-900/50 bg-black font-bold text-red-500 transition-colors hover:bg-red-900 hover:text-white"
+              >
+                -
+              </button>
+              <span className="w-6 text-center font-mono text-xl font-bold text-white">
+                {quantidade}
+              </span>
+              <button
+                onClick={() => setQuantidade(Math.min(10, quantidade + 1))}
+                className="flex h-8 w-8 items-center justify-center rounded border border-red-900/50 bg-black font-bold text-red-500 transition-colors hover:bg-red-900 hover:text-white"
+              >
+                +
+              </button>
+            </div>
+          </div>
+
+          {/* Grid de Botões */}
           <div className="mb-4 grid grid-cols-4 gap-2">
             {[4, 6, 8, 10, 12, 20, 100].map((d) => (
               <button
@@ -83,21 +125,23 @@ export function MasterTools() {
                 className="group relative overflow-hidden rounded border border-red-900/40 bg-zinc-900 py-3 text-xs font-bold text-red-600 transition-all hover:border-red-500 hover:bg-red-950/30 hover:shadow-[0_0_10px_rgba(220,38,38,0.3)] active:scale-95"
               >
                 <span className="relative z-10">D{d}</span>
-                {/* Efeito de Scanline no Hover */}
                 <div className="absolute inset-0 -translate-y-full bg-red-500/10 transition-transform group-hover:translate-y-0" />
               </button>
             ))}
             <button
-              onClick={() => setHistorico([])}
+              onClick={() => {
+                setHistorico([]);
+                setQuantidade(1); // Reseta a qtd ao limpar
+              }}
               className="col-span-1 rounded border border-red-900/20 text-[10px] font-bold text-zinc-600 hover:bg-red-950/50 hover:text-red-500"
             >
               CLR
             </button>
           </div>
 
-          {/* Log de Rolagem (Estilo Terminal) */}
+          {/* Log de Rolagem */}
           <div className="flex-1 overflow-hidden rounded border border-red-900/30 bg-black p-2 font-mono text-xs shadow-inner">
-            <div className="scrollbar-thin scrollbar-thumb-red-900 scrollbar-track-transparent h-full overflow-y-auto pr-2">
+            <div className="custom-scrollbar scrollbar-red h-full overflow-y-auto pr-2">
               <div className="mb-2 border-b border-zinc-900 pb-1 text-zinc-600">
                 // SYSTEM_LOG_OUTPUT
               </div>
@@ -111,22 +155,33 @@ export function MasterTools() {
               {historico.map((roll, i) => (
                 <div
                   key={i}
-                  className="mb-1 flex items-center justify-between border-l-2 border-red-900/50 bg-red-950/5 px-2 py-1"
+                  className="mb-1 flex flex-col border-l-2 border-red-900/50 bg-red-950/5 px-2 py-2"
                 >
-                  <div className="flex gap-2">
-                    <span className="text-zinc-600">[{roll.timestamp}]</span>
-                    <span className="text-red-400">Rolagem {roll.dado}</span>
+                  <div className="flex items-center justify-between">
+                    <div className="flex gap-2">
+                      <span className="text-zinc-600">[{roll.timestamp}]</span>
+                      <span className="font-bold text-red-400">
+                        {roll.dado}
+                      </span>
+                    </div>
+                    {/* VALOR DA SOMA */}
+                    <span
+                      className={`text-lg font-bold ${
+                        roll.critico
+                          ? "text-yellow-500 drop-shadow-[0_0_5px_rgba(234,179,8,0.5)]"
+                          : "text-white"
+                      }`}
+                    >
+                      {roll.valor}
+                    </span>
                   </div>
-                  <span
-                    className={`font-bold ${
-                      roll.critico
-                        ? "text-yellow-500 drop-shadow-[0_0_5px_rgba(234,179,8,0.5)]"
-                        : "text-white"
-                    }`}
-                  >
-                    {roll.valor < 10 && "0"}
-                    {roll.valor}
-                  </span>
+
+                  {/* DETALHES (Se tiver mais de 1 dado) */}
+                  {roll.detalhes.length > 1 && (
+                    <div className="mt-1 text-[10px] tracking-wide text-zinc-500">
+                      Resultados: [ {roll.detalhes.join(", ")} ]
+                    </div>
+                  )}
                 </div>
               ))}
               <div ref={logEndRef} />
@@ -138,7 +193,6 @@ export function MasterTools() {
       {/* --- CONTEÚDO: REFERÊNCIAS --- */}
       {abaAtiva === "ref" && (
         <div className="custom-scrollbar scrollbar-red flex-1 overflow-y-auto p-4">
-          {/* Seção DT */}
           <section className="mb-6">
             <h4 className="mb-2 flex items-center gap-2 text-xs font-bold tracking-wider text-red-500 uppercase">
               <span className="h-px w-4 bg-red-500"></span>
@@ -162,7 +216,6 @@ export function MasterTools() {
             </div>
           </section>
 
-          {/* Seção Armas */}
           <section className="mb-6">
             <h4 className="mb-2 flex items-center gap-2 text-xs font-bold tracking-wider text-red-500 uppercase">
               <span className="h-px w-4 bg-red-500"></span>
@@ -198,7 +251,6 @@ export function MasterTools() {
             </table>
           </section>
 
-          {/* Seção Condições */}
           <section>
             <h4 className="mb-2 flex items-center gap-2 text-xs font-bold tracking-wider text-red-500 uppercase">
               <span className="h-px w-4 bg-red-500"></span>
