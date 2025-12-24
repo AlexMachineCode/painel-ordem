@@ -1,6 +1,107 @@
 @import "tailwindcss";
 
-@theme {
-  --font-sans: var(--font-geist-sans), ui-sans-serif, system-ui, sans-serif,
+:root {
+  --font-sans:
+    var(--font-geist-sans), ui-sans-serif, system-ui, sans-serif,
     "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+}
+
+/* --- COLE O CÓDIGO DO GLITCH AQUI EMBAIXO --- */
+
+@keyframes glitch-anim {
+  0% {
+    transform: translate(0);
+  }
+  20% {
+    transform: translate(-2px, 2px);
+  }
+  40% {
+    transform: translate(-2px, -2px);
+  }
+  60% {
+    transform: translate(2px, 2px);
+  }
+  80% {
+    transform: translate(2px, -2px);
+  }
+  100% {
+    transform: translate(0);
+  }
+}
+
+.glitch-text:hover {
+  display: inline-block;
+  animation: glitch-anim 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94) both infinite;
+  color: #4ade80; /* Verde Matrix */
+  text-shadow:
+    2px 2px #ef4444,
+    -2px -2px #3b82f6; /* Efeito 3D cromático (Vermelho/Azul) */
+}
+/* --- SCROLLBARS CUSTOMIZADAS --- */
+/* Adicione a classe "custom-scrollbar" na div que tem scroll */
+
+.custom-scrollbar::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-track {
+  background: rgba(0, 0, 0, 0.3);
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb {
+  background: #27272a; /* Zinc-800 (Padrão) */
+  border-radius: 3px;
+}
+
+/* Variante VERMELHA (Mestre) */
+/* Use: className="custom-scrollbar scrollbar-red" */
+.scrollbar-red::-webkit-scrollbar-thumb {
+  background: #450a0a; /* Red-950 */
+  border: 1px solid #7f1d1d; /* Borda Red-900 */
+}
+.scrollbar-red::-webkit-scrollbar-thumb:hover {
+  background: #991b1b; /* Red-800 */
+  box-shadow: 0 0 10px #dc2626; /* Glow Vermelho */
+}
+
+/* Variante VERDE (Player) */
+/* Use: className="custom-scrollbar scrollbar-green" */
+.scrollbar-green::-webkit-scrollbar-thumb {
+  background: #052e16; /* Green-950 */
+  border: 1px solid #14532d; /* Borda Green-900 */
+}
+.scrollbar-green::-webkit-scrollbar-thumb:hover {
+  background: #166534; /* Green-800 */
+  box-shadow: 0 0 10px #22c55e; /* Glow Verde */
+}
+
+/* --- EFEITO SCANLINE (Linha descendo) --- */
+/* Adicione a classe "scanline-anim" numa div vazia absolute */
+
+@keyframes scanlineMove {
+  0% {
+    transform: translateY(-100%);
+  }
+  100% {
+    transform: translateY(100vh);
+  }
+}
+
+.scanline-anim {
+  width: 100%;
+  height: 100px;
+  z-index: 10;
+  background: linear-gradient(
+    0deg,
+    rgba(0, 0, 0, 0) 0%,
+    rgba(255, 0, 0, 0.2) 50%,
+    rgba(0, 0, 0, 0) 100%
+  );
+  opacity: 0.1;
+  position: fixed;
+  bottom: 100%;
+  left: 0;
+  animation: scanlineMove 10s linear infinite; /* 10s para descer a tela */
+  pointer-events: none;
 }
