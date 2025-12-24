@@ -1,29 +1,80 @@
-# Create T3 App
+# 🕵️ Ordo Veritas - Sistema de Gestão de Missões
 
-This is a [T3 Stack](https://create.t3.gg/) project bootstrapped with `create-t3-app`.
+> "O paranormal não vem para a nossa realidade de maneira fácil... a Realidade tende a se curar."
 
-## What's next? How do I make an app with this?
+Um sistema web imersivo *Full-Stack* desenvolvido para auxiliar narrativas do RPG de mesa **Ordem Paranormal**. A aplicação serve como um "hub" digital onde o Mestre pode gerenciar documentos e pistas, enquanto os jogadores acessam um banco de dados interativo para investigar evidências em tempo real.
 
-We try to keep this project as simple as possible, so you can start with just the scaffolding we set up for you, and add additional things later when they become necessary.
+![Status do Projeto](https://img.shields.io/badge/Status-Em_Desenvolvimento-yellow)
+![Tech Stack](https://img.shields.io/badge/Stack-T3_App-blue)
 
-If you are not familiar with the different technologies used in this project, please refer to the respective docs. If you still are in the wind, please join our [Discord](https://t3.gg/discord) and ask for help.
+## 💻 Sobre o Projeto
 
-- [Next.js](https://nextjs.org)
-- [NextAuth.js](https://next-auth.js.org)
-- [Prisma](https://prisma.io)
-- [Drizzle](https://orm.drizzle.team)
-- [Tailwind CSS](https://tailwindcss.com)
-- [tRPC](https://trpc.io)
+Este projeto foi criado para resolver a necessidade de compartilhar pistas visuais (mapas, documentos, fotos) de forma organizada e imersiva durante as sessões de RPG.
 
-## Learn More
+O sistema é dividido em duas interfaces:
+1.  **Terminal do Mestre (Admin):** Painel protegido por senha onde o narrador cria missões, faz upload de pistas e controla a visibilidade (revelar/esconder) de cada item.
+2.  **Base de Dados (Pública):** Interface responsiva para os jogadores visualizarem as pistas reveladas pelo mestre, simulando um acesso a um sistema de investigação.
 
-To learn more about the [T3 Stack](https://create.t3.gg/), take a look at the following resources:
+## ✨ Funcionalidades
 
-- [Documentation](https://create.t3.gg/)
-- [Learn the T3 Stack](https://create.t3.gg/en/faq#what-learning-resources-are-currently-available) — Check out these awesome tutorials
+### 🔐 Área Administrativa (Mestre)
+* **Autenticação Segura:** Proteção de rota via Middleware e Cookies (Senha mestra).
+* **Gestão de Missões:** Criar, editar e arquivar pastas de casos.
+* **Gestão de Evidências:** Adicionar links de imagens e descrições.
+* **Controle de Visibilidade:** Botão "Revelar" que atualiza instantaneamente o que os jogadores podem ver.
+* **Design Responsivo:** Painel totalmente funcional em celulares e tablets.
 
-You can check out the [create-t3-app GitHub repository](https://github.com/t3-oss/create-t3-app) — your feedback and contributions are welcome!
+### 🕵️ Área Pública (Jogadores)
+* **Imersão Visual:** Interface estilo "Terminal Hacker" / Dossiê.
+* **Zoom de Alta Qualidade:** Visualização detalhada de documentos sem perda de qualidade.
+* **Mobile-First:** Layout adaptável para consulta rápida via celular durante a sessão.
+* **Feedback Visual:** Indicadores de novas evidências e status das missões.
 
-## How do I deploy this?
+## 🛠️ Tecnologias Utilizadas (T3 Stack)
 
-Follow our deployment guides for [Vercel](https://create.t3.gg/en/deployment/vercel), [Netlify](https://create.t3.gg/en/deployment/netlify) and [Docker](https://create.t3.gg/en/deployment/docker) for more information.
+O projeto foi construído utilizando as melhores práticas do desenvolvimento web moderno:
+
+* **[Next.js 15](https://nextjs.org/)**: Framework React com App Router e Server Actions.
+* **[TypeScript](https://www.typescriptlang.org/)**: Tipagem estática para segurança do código.
+* **[Tailwind CSS](https://tailwindcss.com/)**: Estilização utilitária para design rápido e responsivo.
+* **[tRPC](https://trpc.io/)**: Comunicação *type-safe* entre Frontend e Backend.
+* **[Prisma](https://www.prisma.io/)**: ORM para manipulação do banco de dados.
+* **[MySQL](https://www.mysql.com/)**: Banco de dados relacional (Hospedado no Railway).
+* **Zod**: Validação de esquemas e dados.
+
+## 🚀 Como Rodar Localmente
+
+Pré-requisitos: Node.js e gerenciador de pacotes (npm, pnpm ou yarn).
+
+1.  **Clone o repositório**
+    ```bash
+    git clone [https://github.com/seu-usuario/ordem-rpg.git](https://github.com/seu-usuario/ordem-rpg.git)
+    cd ordem-rpg
+    ```
+
+2.  **Instale as dependências**
+    ```bash
+    pnpm install
+    ```
+
+3.  **Configure as Variáveis de Ambiente**
+    Crie um arquivo `.env` na raiz e preencha:
+    ```env
+    DATABASE_URL="mysql://usuario:senha@host:porta/banco"
+    ADMIN_PASSWORD="sua_senha_secreta"
+    ```
+
+4.  **Sincronize o Banco de Dados**
+    ```bash
+    pnpm db:push
+    ```
+
+5.  **Inicie o Servidor**
+    ```bash
+    pnpm dev
+    ```
+    Acesse em `http://localhost:3000`.
+
+
+
+Desenvolvido por **Alex Batista** *Estudante de Engenharia da Computação - UnB*
