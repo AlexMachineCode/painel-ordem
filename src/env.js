@@ -11,8 +11,16 @@ export const env = createEnv({
       process.env.NODE_ENV === "production"
         ? z.string()
         : z.string().optional(),
-    AUTH_DISCORD_ID: z.string(),
-    AUTH_DISCORD_SECRET: z.string(),
+
+    // --- MUDANÇA: Comentei o Discord e adicionei Google e Admin ---
+    // AUTH_DISCORD_ID: z.string(),
+    // AUTH_DISCORD_SECRET: z.string(),
+
+    GOOGLE_CLIENT_ID: z.string(),
+    GOOGLE_CLIENT_SECRET: z.string(),
+    ADMIN_EMAIL: z.string().email(), // Valida se é um email de verdade
+    // -------------------------------------------------------------
+
     DATABASE_URL: z.string().url(),
     NODE_ENV: z
       .enum(["development", "test", "production"])
@@ -34,8 +42,16 @@ export const env = createEnv({
    */
   runtimeEnv: {
     AUTH_SECRET: process.env.AUTH_SECRET,
-    AUTH_DISCORD_ID: process.env.AUTH_DISCORD_ID,
-    AUTH_DISCORD_SECRET: process.env.AUTH_DISCORD_SECRET,
+
+    // --- MUDANÇA: Mapeando as novas variáveis aqui também ---
+    // AUTH_DISCORD_ID: process.env.AUTH_DISCORD_ID,
+    // AUTH_DISCORD_SECRET: process.env.AUTH_DISCORD_SECRET,
+
+    GOOGLE_CLIENT_ID: process.env.GOOGLE_CLIENT_ID,
+    GOOGLE_CLIENT_SECRET: process.env.GOOGLE_CLIENT_SECRET,
+    ADMIN_EMAIL: process.env.ADMIN_EMAIL,
+    // --------------------------------------------------------
+
     DATABASE_URL: process.env.DATABASE_URL,
     NODE_ENV: process.env.NODE_ENV,
   },

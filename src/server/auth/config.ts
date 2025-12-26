@@ -1,8 +1,11 @@
 import { PrismaAdapter } from "@auth/prisma-adapter";
 import { type DefaultSession, type NextAuthConfig } from "next-auth";
-import DiscordProvider from "next-auth/providers/discord";
+// 1. Mudamos de Discord para Google
+import GoogleProvider from "next-auth/providers/google";
 
 import { db } from "~/server/db";
+// 2. Importamos o env para pegar as chaves e o email
+import { env } from "~/env";
 
 /**
  * Module augmentation for `next-auth` types. Allows us to add custom properties to the `session`
@@ -32,19 +35,30 @@ declare module "next-auth" {
  */
 export const authConfig = {
   providers: [
-    DiscordProvider,
-    /**
-     * ...add more providers here.
-     *
-     * Most other providers require a bit more work than the Discord provider. For example, the
-     * GitHub provider requires you to add the `refresh_token_expires_in` field to the Account
-     * model. Refer to the NextAuth.js docs for the provider you want to use. Example:
-     *
-     * @see https://next-auth.js.org/providers/github
-     */
+    // 3. Configuração do Google com as variáveis do .env
+    GoogleProvider({
+      clientId: env.GOOGLE_CLIENT_ID,
+      clientSecret: env.GOOGLE_CLIENT_SECRET,
+    }),
   ],
   adapter: PrismaAdapter(db),
   callbacks: {
+    // 4. O PORTEIRO (SignIn Callback)
+    // Essa função roda ANTES de criar o usuário no banco
+    signIn: async ({ user }) => {
+      // Se o email de quem está logando for igual ao seu do .env
+      if (user.email === env.ADMIN_EMAIL) {
+        return true; // Pode entrar
+      }
+
+      // Se não for, bloqueia
+      console.log(
+        `❌ Tentativa de invasão bloqueada: ${user.email ?? "Sem email"}`,
+      );
+      return false;
+    },
+
+    // 5. Mantém a sessão funcionando
     session: ({ session, user }) => ({
       ...session,
       user: {
